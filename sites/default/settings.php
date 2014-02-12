@@ -215,7 +215,7 @@ $databases = array (
   array (
     'default' => 
     array (
-      'database' => 'grass',
+      'database' => 'tools',
       'username' => 'root',
       'password' => 'root',
       'host' => 'localhost',
