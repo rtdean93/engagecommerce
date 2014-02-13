@@ -97,7 +97,7 @@ function storefront_form_system_theme_settings_alter(&$form, &$form_state, $form
     '#title' => t('Set a max width'),
     '#states' => array(
       'visible' => array(
-        'select[name="dlayout_page_unit"]' => array('selected' => 'selected', 'value' => '%'),
+        'select[name="dlayout_page_unit"]' => array('value' => '%'),
       ),
     ),
   );
@@ -518,7 +518,6 @@ function storefront_form_system_theme_settings_alter(&$form, &$form_state, $form
   // Custom validate and submit functions.
   $form['#validate'][] = 'storefront_theme_settings_validate';
   $form['#submit'][]   = 'storefront_theme_settings_submit';
-
 }
 
 /**
@@ -530,7 +529,7 @@ function storefront_theme_settings_validate($form, &$form_state) {
 
   // Validate max_width values seperatly.
   if ($values['dlayout_set_max_width'] == 1) {
-    if (empty($values['dlayout_max_width']['#default_value'])) {
+    if (empty($values['dlayout_max_width'])) {
       form_set_error('dlayout_max_width', t('Standard layout max-width is empty - you forgot to enter a value for the max width!'));
     }
   }

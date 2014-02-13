@@ -70,9 +70,13 @@
             <?php if ($site_name || $site_slogan): ?>
               <hgroup<?php if (!$site_slogan && $hide_site_name): ?> class="<?php print $visibility; ?>"<?php endif; ?>>
                 <?php if ($site_name): ?>
-                  <h1 id="site-name"<?php if ($hide_site_name): ?> class="<?php print $visibility; ?>"<?php endif; ?>>
-                  <a href="<?php print base_path();?>"><?php print $site_name; ?></a>
-                </h1>
+                  <?php if ($is_front):?>
+                    <h1 id="site-name"<?php if ($hide_site_name): ?> class="<?php print $visibility; ?>"<?php endif; ?>>
+                      <a href="<?php print base_path();?>"><?php print $site_name; ?></a>
+                    </h1>
+                  <?php else:?>
+                    <div id="site-name"<?php if ($hide_site_name): ?> class="<?php print $visibility; ?>"<?php endif; ?>><a href="<?php print base_path();?>"><?php print $site_name; ?></a></div>
+                  <?php endif;?>
                 <?php endif; ?>
                 <?php if ($site_slogan): ?>
                   <h2 id="site-slogan"><?php print $site_slogan; ?></h2>

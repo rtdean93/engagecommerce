@@ -223,6 +223,7 @@ article.node-product-detail nav {
 
 /* line 156, ../sass/sftools.sass */
 #quicktabs-product_details .quicktabs-tabpage span.rating {
+  float: left;
   padding-top: 2px;
 }
 

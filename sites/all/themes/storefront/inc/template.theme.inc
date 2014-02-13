@@ -74,7 +74,7 @@ function storefront_item_list($vars) {
       }
       // Render nested list.
       if (count($children) > 0) {
-        $data .= theme_item_list(
+        $data .= storefront_item_list(
           array(
             'items' => $children,
             'title' => NULL,

@@ -65,7 +65,7 @@ settings[dlayout_max_width_unit] = 'px'
 settings[dlayout_page_width]     = 95
 settings[dlayout_sidebar_first]  = 25
 settings[dlayout_sidebar_second] = 25
-settings[dlayout_set_max_width]  = 1
+settings[dlayout_set_max_width]  = 0
 settings[dlayout_max_width]      = 1260
 settings[dlayout_media_query]    = 'only screen and (min-width:1025px)'
 
@@ -90,9 +90,9 @@ settings[breadcrumb_home]      = 1
 settings[menu_item_span_elements] = 1
 settings[menu_item_span_elements] = 'image-no-float'
 
-; Information added by drupal.org packaging script on 2012-06-29
-version = "7.x-1.2"
+; Information added by drupal.org packaging script on 2013-10-01
+version = "7.x-1.2+9-dev"
 core = "7.x"
 project = "storefront"
-datestamp = "1341003440"
+datestamp = "1380638014"
 
