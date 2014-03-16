@@ -10,44 +10,36 @@
  * Implements hook_commerce_product_type_update().
  */
 function commerce_autosku_commerce_product_type_update($type) {
-  if(isset($type['autosku_status']) && !$type['autosku_status']) {
-    $type['autosku']['pattern'] = FALSE;
-  }
-  ctools_include('export');
-  if(!$record = ctools_export_crud_load('commerce_autosku_patterns', $type['type'])) {
-    $record = ctools_export_crud_new('commerce_autosku_patterns');
-  }
+  $existing = db_query("SELECT 1 FROM {commerce_autosku_patterns} WHERE product_type = :type", array(':type' => $type['type']))->fetch();
+  $record = new stdClass();
   $record->product_type = $type['type'];
-  $record->pattern = !empty($type['autosku']['pattern']) ? $type['autosku']['pattern'] : FALSE;
+  $record->pattern = $type['autosku_status'] ? $type['autosku']['pattern'] : FALSE;
   $record->advanced = $type['autosku']['advanced'];
-
-  ctools_export_crud_save('commerce_autosku_patterns', $record);
+  if ($existing) {
+    drupal_write_record('commerce_autosku_patterns', $record, 'product_type');
+  }
+  else {
+    drupal_write_record('commerce_autosku_patterns', $record);
+  }
 }
 
 /**
  * Implements hook_commerce_product_type_insert().
  */
 function commerce_autosku_commerce_product_type_insert($type) {
-  if(isset($type['autosku_status']) && !$type['autosku_status']) {
-    $type['autosku']['pattern'] = FALSE;
-  }
-  ctools_include('export');
-  $record = ctools_export_crud_new('commerce_autosku_patterns');
+  $record = new stdClass();
   $record->product_type = $type['type'];
-  $record->pattern = !empty($type['autosku']['pattern']) ? $type['autosku']['pattern'] : FALSE;
+  $record->pattern = !empty($type['autosku_status']) ? $type['autosku']['pattern'] : FALSE;
   $record->advanced = isset($type['autosku']['advanced']) ? $type['autosku']['advanced'] : array();
 
-  ctools_export_crud_save('commerce_autosku_patterns', $record);
+  drupal_write_record('commerce_autosku_patterns', $record);
 }
 
 /**
  * Implements hook_commerce_product_type_delete().
  */
 function commerce_autosku_commerce_product_type_delete($type) {
-  ctools_include('export');
-  if($record = ctools_export_crud_load('commerce_autosku_patterns', $type['type'])) {
-    ctools_export_crud_delete('commerce_autosku_patterns', $record);
-  }
+  db_query("DELETE FROM {commerce_autosku_patterns} WHERE product_type = :type", array(':type' => $type['type']));
 }
 
 /**
@@ -75,16 +67,30 @@ function commerce_autosku_commerce_product_presave($product) {
     }
     //@todo: Replace TRUE with a check if we should update existing SKUS.
     elseif (empty($product->sku) || _commerce_autosku_is_temporary_sku($product->sku) || $settings['advanced']['update_existing']) {
-      // Determine the casing to use for the generated SKU from the settings.
-      if (!empty($settings['advanced']['case'])) {
-        $case = $settings['advanced']['case'];
-      }
-      else {
-        $case = 'original';
+      $data = array('commerce-product' => $product);
+      $sku = token_replace($settings['pattern'], $data);
+      $sku = commerce_autosku_cleanstring($sku);
+      if ($settings['advanced']['case']) {
+        switch ($settings['advanced']['case']) {
+          case 'uppercase':
+            $sku = drupal_strtoupper($sku);
+            break;
+          case 'lowercase':
+            $sku = drupal_strtolower($sku);
+        }
       }
 
-      // Generate the SKU.
-      $product->sku = commerce_autosku_generate_sku($product, $settings['pattern'], $case);
+      //Borrowed from pathauto...
+      if (!commerce_product_validate_sku_unique($sku, $product->product_id)) {
+        $original_sku = $sku;
+        $i = 0;
+
+        do {
+          $sku = commerce_autosku_cleanstring($original_sku . COMMERCE_AUTOSKU_REPLACEMENT . $i);
+          $i++;
+        } while (!commerce_product_validate_sku_unique($sku, $product->product_id));
+      }
+      $product->sku = $sku;
     }
   }
 }
@@ -93,17 +99,29 @@ function commerce_autosku_commerce_product_presave($product) {
  * Implements hook_commerce_product_type_info_alter().
  */
 function commerce_autosku_commerce_product_type_info_alter(&$types) {
-  if (!empty($types)) {
-    ctools_include('export');
-    $patterns = ctools_export_crud_load_multiple('commerce_autosku_patterns', array_keys($types));
+  $patterns = array();
 
-    foreach($types as $name => &$type) {
-      if(isset($patterns[$name])) {
-        $type['autosku'] = (array) $patterns[$name];
+  if (!empty($types)) {
+    //Fetch all the records at once before merging into the types array
+    $result = db_query("SELECT product_type, pattern, advanced FROM {commerce_autosku_patterns} WHERE product_type IN (:types)", array(':types' => array_keys($types)), array('fetch' => PDO::FETCH_ASSOC));
+
+    foreach ($result as $record) {
+      $record['advanced'] = unserialize($record['advanced']);
+      if (!is_array($record['advanced'])) {
+        $record['advanced'] = _commerce_autosku_default_settings();
       }
-      elseif(empty($type['autosku'])) {
-        $type['autosku'] = FALSE;
-      }
+      $patterns[$record['product_type']] = $record;
+    }
+  }
+
+  foreach ($types as $name => &$type) {
+    if (!empty($patterns[$name])) {
+      $type['autosku'] = $patterns[$name];
+    }
+    //Modules implementing hook_product_type_info() can
+    //declare autosku patterns in code if they wish.
+    elseif (empty($type['autosku'])) {
+      $type['autosku'] = FALSE;
     }
   }
 }

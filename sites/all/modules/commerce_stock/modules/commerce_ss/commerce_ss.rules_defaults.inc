@@ -14,7 +14,6 @@ function commerce_ss_default_rules_configuration() {
   $rules_export = '{ "rules_stock_decrease_when_completing_the_order_process" : {
     "LABEL" : "Stock: Decrease when completing the order process",
     "PLUGIN" : "reaction rule",
-    "TAGS" : [ "stock_control" ],
     "REQUIRES" : [ "commerce_ss", "commerce_checkout" ],
     "ON" : [ "commerce_checkout_complete" ],
     "DO" : [
