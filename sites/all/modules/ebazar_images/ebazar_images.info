@@ -1,0 +1,12 @@
+name = ebazar images
+core = 7.x
+package = Engage Commerce
+dependencies[] = image
+features[features_api][] = api:2
+features[image][] = bazar-imagez
+features[image][] = ebazar-blog
+features[image][] = ebazar-cart-images
+features[image][] = ebazar-manufacturer
+features[image][] = ebazar-product-normal
+features[image][] = ebazar-thumbs
+features[image][] = ebazar-zoom

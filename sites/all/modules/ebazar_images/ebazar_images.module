@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the ebazar images feature.
+ */
+
+include_once 'ebazar_images.features.inc';
