@@ -1,0 +1,93 @@
+<?php
+/**
+ * @file
+ * Provides product meta tags for Metatag: Open Graph and Metatag: Twitter Cards.
+ *
+ * Provides additional, generic product-related meta tags for the Metatag submodules.
+ * Will eventually include integration with Drupal Commerce entities.
+ * 
+ * This module includes code originally supplied by fiftyz in a separate 
+ * stand-alone module to fix the formatting of multiple-value image fields
+ * for Metatag: Open Graph submodule. (https://drupal.org/node/1305402#comment-6420040)
+ */
+
+/**
+ * Implements hook_ctools_plugin_api().
+ */
+function metatag_commerce_ctools_plugin_api($owner, $api) {
+  if ($owner == 'metatag' && $api == 'metatag') {
+    return array('version' => 1);
+  }
+}
+
+/**
+ * Implements hook_entity_info_alter().
+ *
+ * Enables Metatag support for the Commerce entities.
+ */
+function metatag_commerce_entity_info_alter(&$entity_info) {
+  if (module_exists('commerce_product')) {
+    $entity_info['commerce_product']['metatags'] = TRUE;
+  }
+}
+
+/**
+ * The following four functions fix multiple-value image fields for 
+ * Open Graph and Twitter Card tags, necessary to work with Pinterest
+ * Rich Pins and Twitter Cards.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function metatag_commerce_theme() {
+  $info['metatag_commerce_opengraph_img'] = array(
+    'render element' => 'element',
+  );
+  $info['metatag_commerce_twitter_img'] = array(
+    'render element' => 'element',
+  );
+
+  return $info;
+}
+
+/**
+ * Theme callback for Open Graph image meta tag.
+ */
+function theme_metatag_commerce_opengraph_img($variables) {
+  $element = &$variables['element'];
+  $values = explode(', ', $element['#value']);
+  $output = '';
+  foreach ($values as $value) {
+    $new_element = $element;
+    $new_element['#value'] = $value;
+    $new_element['#theme'] = 'metatag_opengraph';
+    $output .= theme('metatag_opengraph', array('element' => $new_element));
+  }
+  return ($output);
+}
+ 
+ 
+/**
+ * Theme callback for Twitter Card image meta tag.
+ */
+ function theme_metatag_commerce_twitter_img($variables) {
+  $element = &$variables['element'];
+  $values = explode(', ', $element['#value']);
+  $output = '';
+  foreach ($values as $value) {
+    $new_element = $element;
+    $new_element['#value'] = $value;
+    $new_element['#theme'] = 'metatag_twitter_cards';
+    $output .= theme('metatag_twitter_cards', array('element' => $new_element));
+  }
+  return ($output);
+}
+
+/**
+ * Implements hook_metatag_info_alter().
+ */
+function metatag_commerce_metatag_info_alter(&$info) {
+  $info['tags']['og:image']['element']['#theme'] = 'metatag_commerce_opengraph_img';
+  $info['tags']['twitter:image']['element']['#theme'] = 'metatag_commerce_twitter_img';
+}
