@@ -56,7 +56,7 @@ stylesheets[all][] = css/style.css
  scripts[] = 'bootstrap/js/tab.js'
  scripts[] = 'bootstrap/js/transition.js'
  scripts[] = 'js/code.js'
-
+scripts[] = 'js/commerce_kickstart_theme_custom.js'
 
 
 
