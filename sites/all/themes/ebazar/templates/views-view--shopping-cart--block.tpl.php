@@ -44,7 +44,7 @@
 
       
       <li class="dropdown">
-        <a href="cart" class="dropdown-toggle" data-toggle="dropdown"><?php print $header; ?></a>
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php print $header; ?></a>
 <!-- <a href="/cart" class="dropdown-toggle" >--><?php //print $header; ?><!--</a>-->
         <div class="dropdown-menu">
 
