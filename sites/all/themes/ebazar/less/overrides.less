@@ -31,7 +31,13 @@ html {
 body {
   // Fix horizontal scrolling on iOS devices.
   // http://drupal.org/node/1870076
+  
+  
+
+
+
   position: relative;
+  
   &.admin-expanded.admin-vertical.admin-nw .navbar,
   &.admin-expanded.admin-vertical.admin-sw .navbar {
     margin-left: 260px;
@@ -192,10 +198,12 @@ p:last-child {
 // Search form.
 form#search-block-form {
   margin: 0;
+  float: none;
+  width: 123px;
 }
 .navbar #block-search-form {
   float: none;
-  margin: 5px 0 5px 5px;
+  margin: 15px 0 5px 5px;
   @media @normal {
     float: right;
   }
@@ -203,6 +211,23 @@ form#search-block-form {
 .navbar-search .control-group {
   margin-bottom:0px;
 }
+
+.region-navigation {
+display: inline-block;
+float: right;
+height: 64px;
+width: 300px;
+}
+
+#block-views-shopping-cart-block-1 {
+float: right;
+margin-left: 15px;
+}
+
+.navbar #block-search-form {
+float: right;
+}
+
 
 // Action Links
 ul.action-links {
