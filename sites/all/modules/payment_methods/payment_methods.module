@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Payment Methods feature.
+ */
+
+include_once 'payment_methods.features.inc';
